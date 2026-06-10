@@ -23,15 +23,15 @@ opposite_directions: (dict[int, int]) = {
 directions_letters: (dict[int, str]) = {
     north: "N",
     south: "S",
-    east: "W",
-    west: "E"
+    east: "E",
+    west: "W"
 }
 
 letters_directions: (dict[str, int]) = {
     "N": north,
     "S": south,
-    "W": east,
-    "E": west
+    "E": east,
+    "W": west
 }
 
 
