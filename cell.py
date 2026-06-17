@@ -7,8 +7,8 @@ west: int = 0b1000
 walls: int = north | south | east | west
 
 directions: (dict[int, tuple[int, int]]) = {
-    north: (1, 0),
-    south: (-1, 0),
+    north: (-1, 0),
+    south: (1, 0),
     east: (0, 1),
     west: (0, -1)
 }
