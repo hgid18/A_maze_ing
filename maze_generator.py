@@ -18,6 +18,8 @@ class Maze:
         self.exit = config.EXIT
         self.seed = config.SEED
 
+        self.blocked: set[tuple[int, int]] = set()
+
         self.grid = []
 
         for row in range(self.height):
@@ -25,6 +27,30 @@ class Maze:
             for col in range(self.width):
                 current_row.append(Cell(row=row, col=col))
             self.grid.append(current_row)
+
+    def create_42(self) -> None:
+        pattern = [
+            "1010111",
+            "1010001",
+            "1110111",
+            "0010100",
+            "0010111"
+        ]
+        pattern_height = len(pattern)
+        pattern_width = len(pattern[0])
+
+        # Si el grid es demasiado pequeño, no dibujar el patrón
+        if self.height < pattern_height or self.width < pattern_width:
+            print("Entry overlaps the 42 pattern.")
+            return
+
+        start_row = self.height // 2 - pattern_height // 2
+        start_col = self.width // 2 - pattern_width // 2
+
+        for r in range(pattern_height):
+            for c in range(pattern_width):
+                if pattern[r][c] == "1":
+                    self.blocked.add((start_row + r, start_col + c))
 
     def in_bounds(self, row: int, col: int) -> bool:
         return 0 <= row < self.height and 0 <= col < self.width
@@ -61,6 +87,8 @@ class Maze:
     def generate(self) -> None:
         """Genera un laberinto perfecto usando DFS recursivo."""
 
+        self.create_42()
+
         if self.seed is not None:
             random.seed(self.seed)
 
@@ -73,16 +101,21 @@ class Maze:
             random.shuffle(neigh)
 
             for direction, nrow, ncol in neigh:
+
+                if (nrow, ncol) in self.blocked:
+                    continue
+
                 if (nrow, ncol) not in visited:
                     self.carve_passage(
-                        row,
-                        col,
-                        direction,
-                        nrow,
-                        ncol,
+                        row=row,
+                        col=col,
+                        direction=direction,
+                        nrow=nrow,
+                        ncol=ncol,
                     )
                     dfs(nrow, ncol)
 
         # ENTRY está en formato (x, y)
         start_x, start_y = self.entry
+
         dfs(start_y, start_x)
