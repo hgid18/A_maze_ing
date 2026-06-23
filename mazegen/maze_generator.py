@@ -1,10 +1,9 @@
 import random
-from cell import Cell
-from cell import directions, opposite_directions
+from .cell import Cell, directions, opposite_directions
 from config_parser import ConfigMaze
 
 
-class Maze:
+class MazeGenerator:
     width: int
     height: int
     entry: tuple[int, int]

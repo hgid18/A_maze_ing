@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 
 north: int = 0b0001
-south: int = 0b0010
-east: int = 0b0100
+east: int = 0b0010
+south: int = 0b0100
 west: int = 0b1000
 walls: int = north | south | east | west
 
