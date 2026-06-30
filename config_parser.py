@@ -7,7 +7,7 @@ class ConfigMaze:
     HEIGHT: int
     ENTRY: tuple[int, int]
     EXIT: tuple[int, int]
-    PERFECT: str
+    PERFECT: bool
     OUTPUTFILE: str
     SEED: Optional[int]
 
@@ -58,7 +58,7 @@ def config_file(file_path: str) -> ConfigMaze:
                 elif key == "OUTPUT_FILE":
                     config.OUTPUTFILE = value
                 elif key == "PERFECT":
-                    config.PERFECT = value
+                    config.PERFECT = value.lower() in ("true")
                 elif key == "SEED":
                     config.SEED = int(value)
                 else:

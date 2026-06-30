@@ -1,5 +1,3 @@
-"""Main entry point for the A-Maze-ing maze generator."""
-
 import sys
 from collections import deque
 from typing import Deque, Dict, List, Optional, Tuple
@@ -224,19 +222,21 @@ def menu(maze: MazeGenerator, path: Optional[List[str]],
             print("Invalid choice.")
 
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
-
 def main() -> None:
-    """Parse config, generate maze, export and display it."""
     if len(sys.argv) != 2:
         print("Usage: python3 a_maze_ing.py config.txt", file=sys.stderr)
         sys.exit(1)
 
     try:
         config = config_file(sys.argv[1])
-        maze = MazeGenerator(config)
+        maze = MazeGenerator(
+            width=config.WIDTH,
+            height=config.HEIGHT,
+            entry=config.ENTRY,
+            exit=config.EXIT,
+            seed=config.SEED,
+            perfect=config.PERFECT,
+        )
         maze.generate()
 
         solver = MazeSolver(maze)

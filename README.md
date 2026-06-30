@@ -181,41 +181,33 @@ python -m build
 pip install dist/mazegen-1.0.0-py3-none-any.whl
 ```
 
-### Basic usage example
+from mazegen import MazeGenerator
 
-```python
-from mazegen.maze_generator import MazeGenerator
-from mazegen.config_parser import ConfigMaze
+# Instanciar y generar
+maze = MazeGenerator(
+    width=10,
+    height=10,
+    entry=(0, 0),
+    exit=(9, 9),
+    seed=7,
+    perfect=True
+)
+maze.generate()
 
-# Build a config object manually
-config = ConfigMaze()
-config.WIDTH = 10
-config.HEIGHT = 10
-config.ENTRY = (0, 0)
-config.EXIT = (9, 9)
-config.SEED = 7
-config.PERFECT = "True"
-config.OUTPUTFILE = "output.txt"
+# Acceder a una celda
+cell = maze.cell_at(0, 0)
+print(cell)  # Output: Cell(0,0 walls=NSEW)
 
-# Instantiate and generate
-gen = MazeGenerator(config)
-gen.generate()
-
-# Access the grid
-cell = gen.cell_at(0, 0)
-print(cell)           # Cell(0,0 walls=NSEW) — bitmask representation
-
-# Check if a wall exists in a direction
-from mazegen.cell import north, east, south, west
+# Verificar si una pared existe
+from mazegen.cell import east
 if cell.has_wall(east):
     print("East wall is closed")
 
-# Iterate all cells
-for row in gen.grid:
+# Iterar sobre el grid
+for row in maze.grid:
     for c in row:
         print(c.walls_state, end=" ")
     print()
-```
 
 ### Passing custom parameters
 
@@ -246,12 +238,6 @@ print("Path:", "".join(path) if path else "No path found")
 ---
 
 ## Team and Project Management
-
-### Team members
-
-| Member | Role |
-|--------|------|
-| `<login1>` | Maze generation algorithm, cell model, config parser |
 
 ### Planning
 
