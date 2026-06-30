@@ -1,22 +1,35 @@
 import random
+from typing import Optional
 from .cell import Cell, directions, opposite_directions
-from config_parser import ConfigMaze
 
 
 class MazeGenerator:
+
     width: int
     height: int
     entry: tuple[int, int]
     exit: tuple[int, int]
+    seed: Optional[int]
+    perfect: bool
     grid: list[list[Cell]]
+    blocked: set[tuple[int, int]]
 
-    def __init__(self, config: ConfigMaze) -> None:
-        self.width = config.WIDTH
-        self.height = config.HEIGHT
-        self.entry = config.ENTRY
-        self.exit = config.EXIT
-        self.seed = config.SEED
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        entry: tuple[int, int],
+        exit: tuple[int, int],
+        seed: Optional[int] = None,
+        perfect: bool = False,
+    ) -> None:
 
+        self.width = width
+        self.height = height
+        self.entry = entry
+        self.exit = exit
+        self.seed = seed
+        self.perfect = perfect
         self.blocked: set[tuple[int, int]] = set()
 
         self.grid = []
@@ -38,7 +51,6 @@ class MazeGenerator:
         pattern_height = len(pattern)
         pattern_width = len(pattern[0])
 
-        # Si el grid es demasiado pequeño, no dibujar el patrón
         if self.height < pattern_height or self.width < pattern_width:
             print("Entry overlaps the 42 pattern.")
             return
@@ -83,8 +95,37 @@ class MazeGenerator:
         current.remove_wall(direction)
         neighbor.remove_wall(opposite_directions[direction])
 
+    def add_random_passages(self) -> None:
+        available_passages = []
+
+        for row in range(self.height):
+            for col in range(self.width):
+                if (row, col) in self.blocked:
+                    continue
+
+                cell = self.cell_at(row, col)
+                for direction, (drow, dcol) in directions.items():
+                    nrow, ncol = row + drow, col + dcol
+
+                    if not self.in_bounds(nrow, ncol):
+                        continue
+                    if (nrow, ncol) in self.blocked:
+                        continue
+
+                    if cell.has_wall(direction):
+                        available_passages.append(
+                            (direction, row, col, nrow, ncol)
+                        )
+
+        num_to_open = max(1, len(available_passages) // 5)
+        passages_to_open = random.sample(available_passages,
+                                         min(num_to_open,
+                                             len(available_passages)))
+
+        for direction, row, col, nrow, ncol in passages_to_open:
+            self.carve_passage(row, col, direction, nrow, ncol)
+
     def generate(self) -> None:
-        """Genera un laberinto perfecto usando DFS recursivo."""
 
         self.create_42()
 
@@ -114,7 +155,9 @@ class MazeGenerator:
                     )
                     dfs(nrow, ncol)
 
-        # ENTRY está en formato (x, y)
         start_x, start_y = self.entry
 
         dfs(start_y, start_x)
+
+        if not self.perfect:
+            self.add_random_passages()
